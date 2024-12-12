@@ -124,4 +124,5 @@ You can set these in a `.env` file in the project root.
 
 ## License
 
-[Add appropriate license information]
+This project is the private property of [Preston Sparks](https://github.com/mprestonsparks). All rights reserved.
+`
