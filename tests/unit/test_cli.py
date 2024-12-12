@@ -43,9 +43,9 @@ def mock_sourcegraph_indexer():
                 content="def test():\n    pass",
                 language="python",
                 location=CodeLocation(
-                    file_path="test.py",
-                    start_line=1,
-                    end_line=2
+                    path="test.py",
+                    line=1,
+                    character=0
                 )
             )
         ])
@@ -55,9 +55,9 @@ def mock_sourcegraph_indexer():
                 content="test()",
                 language="python",
                 location=CodeLocation(
-                    file_path="main.py",
-                    start_line=10,
-                    end_line=10
+                    path="main.py",
+                    line=10,
+                    character=0
                 )
             )
         ])
@@ -91,9 +91,10 @@ def test_analyze_code_no_api_key(runner, tmp_path):
     test_file = tmp_path / "test.py"
     test_file.write_text("def test():\n    pass")
     
-    result = runner.invoke(cli, ["analyze", "code", str(test_file)])
-    assert result.exit_code == 1
-    assert "API key not found" in result.output
+    with patch.dict(os.environ, {"OPENAI_API_KEY": ""}):
+        result = runner.invoke(cli, ["analyze", "code", str(test_file)])
+        assert result.exit_code == 1
+        assert "OpenAI API key not found in environment" in result.output
 
 
 def test_analyze_code_success(runner, tmp_path, mock_o1_provider):

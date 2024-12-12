@@ -20,9 +20,14 @@ def get_o1_provider() -> O1ModelProvider:
     """Get an initialized o1 model provider."""
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
-        raise click.ClickException("OpenAI API key not found in environment")
+        raise click.ClickException("OpenAI API key not found in environment. Please set OPENAI_API_KEY.")
     
-    config = O1Config(api_key=api_key)
+    config = O1Config(
+        api_key=api_key,
+        temperature=float(os.getenv("TEMPERATURE", "0.7")),
+        max_tokens=int(os.getenv("MAX_TOKENS", "2048")),
+        model=os.getenv("OPENAI_MODEL", "gpt-4")
+    )
     return O1ModelProvider(config)
 
 
@@ -60,25 +65,23 @@ def analyze():
 
 @analyze.command()
 @click.argument("file_path", type=click.Path(exists=True))
-@click.option("--analysis-type", "-t", default="code quality",
-              help="Type of analysis to perform (e.g., security, performance)")
-async def code(file_path: str, analysis_type: str):
+async def code(file_path: str):
     """Analyze code in a file."""
     content = read_file(file_path)
     snippet = CodeSnippet(
         content=content,
         language=Path(file_path).suffix[1:],  # Remove the dot
         location=CodeLocation(
-            file_path=file_path,
-            start_line=1,
-            end_line=len(content.splitlines())
+            path=file_path,
+            line=1,
+            character=0
         )
     )
     
     provider = get_o1_provider()
     try:
         await provider.initialize()
-        result = await provider.analyze_code(snippet, analysis_type)
+        result = await provider.analyze_code(snippet)
         click.echo(result)
     finally:
         await provider.close()
@@ -95,9 +98,9 @@ async def refactor(file_path: str, goal: str):
         content=content,
         language=Path(file_path).suffix[1:],
         location=CodeLocation(
-            file_path=file_path,
-            start_line=1,
-            end_line=len(content.splitlines())
+            path=file_path,
+            line=1,
+            character=0
         )
     )
     
@@ -121,9 +124,9 @@ async def architecture(file_paths: List[str]):
             content=content,
             language=Path(file_path).suffix[1:],
             location=CodeLocation(
-                file_path=file_path,
-                start_line=1,
-                end_line=len(content.splitlines())
+                path=file_path,
+                line=1,
+                character=0
             )
         ))
     
@@ -151,8 +154,8 @@ async def code(query: str):
         await indexer.initialize()
         results = await indexer.search(query)
         for result in results:
-            click.echo(f"\nFile: {result.location.file_path}")
-            click.echo(f"Lines {result.location.start_line}-{result.location.end_line}:")
+            click.echo(f"\nFile: {result.location.path}")
+            click.echo(f"Line {result.location.line}, Col {result.location.character}:")
             click.echo(f"```{result.language}")
             click.echo(result.content)
             click.echo("```")
@@ -190,8 +193,8 @@ async def references(file_path: str, line: int, character: int):
         await indexer.initialize()
         results = await indexer.get_references(file_path, line, character)
         for result in results:
-            click.echo(f"\nFile: {result.location.file_path}")
-            click.echo(f"Lines {result.location.start_line}-{result.location.end_line}:")
+            click.echo(f"\nFile: {result.location.path}")
+            click.echo(f"Line {result.location.line}, Col {result.location.character}:")
             click.echo(result.content)
     finally:
         await indexer.close()
@@ -202,9 +205,19 @@ def run_async(func, *args, **kwargs):
     return asyncio.run(func(*args, **kwargs))
 
 
-# Wrap async commands
-for cmd in [analyze.commands["code"], analyze.commands["refactor"],
-            analyze.commands["architecture"], search.commands["code"],
-            search.commands["definition"], search.commands["references"]]:
+def wrap_async_command(cmd):
+    """Wrap an async command to run in the event loop."""
     original_callback = cmd.callback
     cmd.callback = lambda *args, **kwargs: run_async(original_callback, *args, **kwargs)
+
+
+# Wrap async commands
+for cmd in [
+    analyze.commands["code"],
+    analyze.commands["refactor"],
+    analyze.commands["architecture"],
+    search.commands["code"],
+    search.commands["definition"],
+    search.commands["references"]
+]:
+    wrap_async_command(cmd)
