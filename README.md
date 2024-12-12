@@ -63,6 +63,65 @@ Run tests using:
 docker-compose run --rm app pytest
 ```
 
+## CLI Commands
+
+Archway provides a powerful command-line interface for code analysis, search, and history management:
+
+### Code Analysis
+
+```bash
+# Analyze a single file
+archway analyze code <file_path>
+
+# Get refactoring suggestions
+archway analyze refactor <file_path> "<goal>"
+
+# Analyze architecture of multiple files
+archway analyze architecture <file_path1> <file_path2> ...
+```
+
+### Code Search
+
+```bash
+# Search for code using Sourcegraph
+archway search search-code "<query>"
+
+# Find symbol definition
+archway search definition <file_path> <line> <character>
+
+# Find symbol references
+archway search references <file_path> <line> <character>
+```
+
+### Analysis History
+
+```bash
+# List all analyses
+archway history list
+
+# List analyses for a specific file
+archway history list --file-path <file_path>
+
+# List analyses since a specific date
+archway history list --since YYYY-MM-DD
+
+# Show details of a specific analysis
+archway history show <analysis-id>
+
+# Delete an analysis from history
+archway history delete <analysis-id>
+```
+
+### Environment Variables
+
+The following environment variables must be set:
+
+- `OPENAI_API_KEY`: Your OpenAI API key
+- `SOURCEGRAPH_ENDPOINT`: Your Sourcegraph instance URL
+- `SOURCEGRAPH_TOKEN`: Your Sourcegraph access token
+
+You can set these in a `.env` file in the project root.
+
 ## License
 
 [Add appropriate license information]

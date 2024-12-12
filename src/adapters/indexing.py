@@ -6,7 +6,7 @@ from typing import List, Optional
 
 import requests
 
-from src.ports.indexing import (
+from ..ports.indexing import (
     CodeDefinition,
     CodeLocation,
     CodeReference,

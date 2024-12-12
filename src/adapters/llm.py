@@ -5,8 +5,8 @@ from typing import List, Optional
 
 from openai import OpenAI
 
-from src.ports.llm import LLMConfig, LLMProvider, LLMResponse
-from src.core.models import CodeSnippet
+from ..ports.llm import LLMConfig, LLMProvider, LLMResponse
+from ..core.models import CodeSnippet
 
 
 @dataclass

@@ -1,19 +1,21 @@
-"""Main entry point for Archway CLI."""
-import sys
+#!/usr/bin/env python3
+"""Main entry point for the Archway CLI."""
+import click
 
-from src.cli.commands import cli
+from cli.commands import index, query, analyze
+
+
+@click.group()
+def cli():
+    """Archway CLI for AI-driven development."""
+    pass
+
+
+cli.add_command(index)
+cli.add_command(query)
+cli.add_command(analyze)
 
 
 def main():
-    """Run the CLI application."""
-    try:
-        cli()
-    except KeyboardInterrupt:
-        sys.exit(1)
-    except Exception as e:
-        print(f"Error: {str(e)}", file=sys.stderr)
-        sys.exit(1)
-
-
-if __name__ == "__main__":
-    main()
+    """Entry point for the CLI."""
+    cli()
