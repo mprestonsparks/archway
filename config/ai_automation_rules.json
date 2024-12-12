@@ -1,0 +1,67 @@
+{
+  "autonomy_levels": {
+    "low": {
+      "description": "Requires human review for all changes",
+      "auto_merge": false,
+      "required_approvals": 2,
+      "can_modify_critical": false
+    },
+    "medium": {
+      "description": "Can auto-merge minor changes",
+      "auto_merge": true,
+      "auto_merge_conditions": {
+        "max_files_changed": 3,
+        "max_lines_changed": 50,
+        "required_test_coverage": 90
+      },
+      "required_approvals": 1,
+      "can_modify_critical": false
+    },
+    "high": {
+      "description": "Can auto-merge most changes",
+      "auto_merge": true,
+      "auto_merge_conditions": {
+        "max_files_changed": 10,
+        "max_lines_changed": 200,
+        "required_test_coverage": 95
+      },
+      "required_approvals": 1,
+      "can_modify_critical": true
+    }
+  },
+  "review_rules": {
+    "critical_paths": [
+      "src/core/",
+      "src/security/",
+      "config/"
+    ],
+    "required_reviewers": {
+      "security": ["security-team"],
+      "core": ["core-team"],
+      "documentation": ["docs-team"]
+    },
+    "auto_reviewers": true
+  },
+  "quality_gates": {
+    "required_checks": [
+      "tests",
+      "linting",
+      "security-scan",
+      "documentation-coverage"
+    ],
+    "coverage_thresholds": {
+      "unit_tests": 90,
+      "integration_tests": 80,
+      "documentation": 85
+    }
+  },
+  "metrics_collection": {
+    "collect_frequency": "daily",
+    "retention_period_days": 90,
+    "alert_thresholds": {
+      "error_rate": 0.05,
+      "review_rejection_rate": 0.2,
+      "test_failure_rate": 0.1
+    }
+  }
+}

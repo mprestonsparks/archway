@@ -1,16 +1,51 @@
 # Archway
 
-Archway is a fully integrated, AI-driven development environment that combines local and cloud-based LLMs with robust code indexing and semantic navigation capabilities.
+Archway is a development environment that combines local and cloud LLMs to help you write, understand, and maintain code. It runs Code Llama locally for quick code suggestions and uses OpenAI's o1 model for deeper analysis like refactoring and architectural decisions.
 
-## Features
+## Core Components
 
-- Sourcegraph integration for code indexing and semantic navigation
-- Local LLM layer for rapid code queries and context retrieval
-- Cloud LLM layer (OpenAI "o1" model) for deep architectural reasoning
-- Dockerized environments for consistent builds
-- Hexagonal Architecture pattern
-- Automated CI/CD pipeline
-- Interactive development support
+- **Local Code Understanding**: Uses Code Llama for rapid code queries and context retrieval
+- **Architectural Analysis**: Employs OpenAI's o1 model for deep architectural reasoning and complex refactoring
+- **Code Navigation**: Uses Sourcegraph for code indexing and semantic navigation
+- **Docker-First**: Operates entirely within containerized environments for consistent and reproducible builds
+
+## How It Works
+
+1. **Local Analysis**: Code Llama runs locally to handle:
+   - Rapid code queries
+   - Context retrieval
+   - Basic code understanding
+   - Quick suggestions
+
+2. **Deep Analysis**: The o1 model handles complex tasks:
+   - Multi-file refactoring
+   - Architecture optimization
+   - Design pattern suggestions
+   - Technical debt analysis
+
+3. **Code Navigation**: Sourcegraph integration enables:
+   - Semantic code search
+   - Jump-to-definition
+   - Find references
+   - Cross-repository understanding
+
+## Development & Integration
+
+Archway provides a foundation for AI-assisted development:
+
+- **Core Capabilities**
+  - Real-time code assistance via Local Analysis
+  - Complex code understanding through Deep Analysis
+  - Code navigation and indexing
+  - State and context management for AI agents
+
+- **Integration with Windsurf**
+  - Powers Windsurf's code analysis and generation
+  - Provides semantic navigation features
+  - Enables autonomous development workflows
+  - Maintains development context across sessions
+
+All features are exposed through well-defined interfaces, allowing integration with both Windsurf and other potential clients. The ultimate goal is for Archway to power its own development, creating a fully autonomous development cycle.
 
 ## Getting Started
 
@@ -48,13 +83,6 @@ archway/
 ├── docker/
 └── scripts/
 ```
-
-## Development
-
-Follow the hexagonal architecture pattern:
-1. Implement domain logic in `core/`
-2. Define interfaces in `ports/`
-3. Create external integrations in `adapters/`
 
 ## Testing
 
@@ -125,4 +153,3 @@ You can set these in a `.env` file in the project root.
 ## License
 
 This project is the private property of [Preston Sparks](https://github.com/mprestonsparks). All rights reserved.
-`

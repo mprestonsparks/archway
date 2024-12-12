@@ -1,0 +1,36 @@
+name: AI Automation Rules
+
+on:
+  issues:
+    types: [opened, edited, closed, reopened]
+  pull_request:
+    types: [opened, closed, edited]
+
+jobs:
+  manage-ai-workflow:
+    runs-on: ubuntu-latest
+    if: contains(github.event.sender.login, 'ai-assistant')
+    steps:
+      - name: Process AI Activity
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Set appropriate labels
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            gh pr edit ${{ github.event.pull_request.number }} --add-label "ai-generated"
+          fi
+
+      - name: Update Project Board
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Move cards based on AI activity
+          echo "Updating project board status..."
+
+      - name: Trigger Reviews
+        if: github.event_name == 'pull_request' && github.event.action == 'opened'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Request reviews based on AI confidence level
+          echo "Requesting appropriate reviews..."
